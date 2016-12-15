@@ -1,0 +1,17 @@
+enabled: true
+
+#The number must not contain commas
+cooldown-charge: 60
+
+#Here, the number must contain commas
+damage-sword: 1.8
+damage-axe: 1.8
+
+#Powers activated (true) or not (false)
+sword-modifier: true
+axe-modifier: true
+not-bow: true
+solidity-iron: true
+drop-iron-ingot: true
+drop-gold-ingot: true
+joyaux: true

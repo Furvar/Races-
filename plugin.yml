@@ -1,0 +1,5 @@
+name: Races++
+version: 1.0
+author: Vilevar
+main: be.Vilevar.Races.Races
+depends: [WolvMC]
