@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,6 +21,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,8 +48,10 @@ public class Nain implements Listener{
 	private Integer cooldownCharge = 60*20;
 	private double damageSword = 1.8;
 	private double damageAxe = 1.8;
+	private double damageEnderman = 2;
 	private boolean swordModifier = true;
 	private boolean axeModifier = true;
+	private boolean endermanModifier = true;
 	private boolean notBow = true;
 	private boolean solidityIron = true;
 	private boolean dropIronIngot = true;
@@ -87,7 +91,7 @@ public class Nain implements Listener{
 	            	Bukkit.getServer().getPluginManager().callEvent(event);
 				}
 			}, 15*20+5);
-			
+			//cooldowns impro
 			Bukkit.getScheduler().runTaskLater(Races.getPlugin(Races.class), new Runnable(){
 				@Override
 				public void run() {
@@ -109,6 +113,12 @@ public class Nain implements Listener{
 				}
 				if(p.getItemInHand().getType().toString().contains("AXE") && axeModifier)e.setDamage(e.getDamage()*damageAxe);
 				if(p.getItemInHand().getType() == Material.BOW && notBow)e.setCancelled(true);
+			}
+		}
+		else if(e.getDamager() instanceof Enderman && e.getEntity() instanceof Player){
+			Player p = (Player)e.getEntity();
+			if(WolvMC.getRace(p.getName()).equals("nain") && endermanModifier){
+				e.setDamage(e.getDamage()*damageEnderman);
 			}
 		}
 	}
@@ -166,6 +176,14 @@ public class Nain implements Listener{
 				break;
 			}
 			if(e.getBlock().getType() == Material.GRASS_PATH)e.setCancelled(true);;
+		}
+	}
+	
+	@EventHandler
+	public void onEat(PlayerItemConsumeEvent e){
+		Player p = e.getPlayer();
+		if((e.getItem().getType() == Material.APPLE || e.getItem().getType() == Material.GOLDEN_APPLE || e.getItem().getType() == Material.CARROT || e.getItem().getType() == Material.MELON) && WolvMC.getRace(p.getName()).equals("nain")){
+			p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 15*20, 4, true), true);
 		}
 	}
 	
@@ -254,11 +272,17 @@ public class Nain implements Listener{
 		if(config.isSet("damage-axe")){
 			damageAxe = config.getDouble("damage-axe");
 		}
+		if(config.isSet("damage-enderman")){
+			damageEnderman = config.getDouble("damage-enderman");
+		}
 		if(config.isSet("sword-modifier")){
 			swordModifier = config.getBoolean("sword-modifier");
 		}
 		if(config.isSet("axe-modifier")){
 			axeModifier = config.getBoolean("axe-modifier");
+		}
+		if(config.isSet("enderman-modifier")){
+			endermanModifier = config.getBoolean("enderman-modifier");
 		}
 		if(config.isSet("not-bow")){
 			notBow = config.getBoolean("not-bow");
