@@ -39,7 +39,7 @@ public class Nain implements Listener{
 	private String chargeTrue = ChatColor.GREEN+"Vous êtes ne pleine charge !";
 	private String chargeFalse = ChatColor.RED+"Vous n'êtes plus en charge !";
 	private static boolean charge = false;
-	private boolean canCharge = true;
+	private ArrayList<Player> canCharge = new ArrayList<>();
 	
 	private String notNain = ChatColor.RED+"Vous n'êtes pas un nain.";
 	private static String joyauItem = ChatColor.GREEN+" du joyau vert";
@@ -72,10 +72,10 @@ public class Nain implements Listener{
 	@EventHandler
 	public void onCharge(final PlayerInteractEvent e){
 		final Player p = e.getPlayer();
-		if(WolvMC.getRace(p.getName()).equals("nain") && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) && !p.isSneaking() && !charge && canCharge){
+		if(WolvMC.getRace(p.getName()).equals("nain") && e.getAction() == Action.LEFT_CLICK_BLOCK && p.isSneaking() && !charge && !canCharge.contains(p)){
 			p.sendMessage(chargeTrue);
 			charge = true;
-			canCharge = false;
+			canCharge.add(p);
 			p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 15*20, 4), true);
 			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 15*20, 4), true);
 			Bukkit.getScheduler().runTaskLater(Races.getPlugin(Races.class), new Runnable(){
@@ -91,7 +91,7 @@ public class Nain implements Listener{
 			Bukkit.getScheduler().runTaskLater(Races.getPlugin(Races.class), new Runnable(){
 				@Override
 				public void run() {
-					canCharge = true;
+					if(canCharge.contains(p))canCharge.remove(p);
 				}
 			}, cooldownCharge);
 		}
